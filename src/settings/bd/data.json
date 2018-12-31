@@ -1,0 +1,65 @@
+{
+"app": {
+      "app":{
+            "AppName":"AMMC",
+            "title":"progress App",
+            "description":"a"
+       },
+      "buttons": [
+             {
+              "name":"BtnSave",
+              "txt":"Guardar",
+              "icon":"save"
+             },
+             {
+              "name":"BtnCancel",
+              "txt":"Cancelar",
+              "icon":"cancel"
+             },
+             {
+              "name":"btnUpdate",
+              "txt":"Actualizar",
+              "icon":"update"
+             },
+             {
+              "name":"BtnDelete",
+              "txt":"Elimnar",
+              "icon":"delete"
+             },
+             {
+              "name":"BtnConfirm",
+              "txt":"Confirmar",
+              "icon":"check"
+             },
+             {
+              "name":"BtnConsult",
+              "txt":"Consultar",
+              "icon":"search"
+             }
+       ],
+      "theme":{
+            "primary": "#283593",
+            "secondary": "#1976D2",
+            "accent": "#82B1FF",
+            "error": "#FF5252",
+            "info": "#2196F3",
+            "success": "#4CAF50",
+            "warning": "#FFC107"
+       },
+      "routes":[
+            {
+              "path": "/",
+              "name": "Home"
+            },
+            {
+              "path": "/login",
+              "name": "Login"
+            },
+            {
+              "path": "/registro",
+              "name": "planteles"
+            }
+        ]
+
+  }
+}

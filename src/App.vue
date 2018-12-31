@@ -1,29 +1,52 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+      <Menu></Menu>
+      <router-view/>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
+<script>
+import Menu from './components/menu/Menu'
+export default {
+  components:{
+    Menu
+  },
+  name: 'App',
+  data () {
+    return {
+      dogs:[]
     }
+  },
+  mounted() {
+      
+      this.$db.collection('dogs').orderBy('created_at').onSnapshot((snapShot) => {
+            this.dogs=[];
+            snapShot.forEach((dog)  => {
+                this.dogs.push({
+                    created_at:dog.data().created_at,
+                    info:dog.data().info
+                })
+            });
+        });
+    
+  },
+  methods:{
+    add:function(){
+      
+      this.$db.collection('task').add(
+          {
+              
+              favicon:'https://picsum.photos/200/300/?random',
+              nombre:'Tienda', 
+              modulos:0,
+              porcentaje:30,
+              created_at: new Date().getTime()
+          }
+      ).then(response=>{
+       
+       console.log(response)
+      })  
+    },
   }
 }
-</style>
+</script>
