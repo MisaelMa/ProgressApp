@@ -215,6 +215,7 @@ export default {
       select: null,
       idTask:this.$route.params.id,
       modules:[],
+      total:0,
       modulo:{
         id:null,
         nombre:null,
@@ -381,9 +382,9 @@ export default {
                   })  
         this.childTask = null
     },
-    updatedChildTaskDone:function(id,boolean){
+    updatedChildTaskDone: async  function(id,boolean){
       boolean = !boolean
-      const index = this.childTasks.findIndex((e) => e.id === id);
+        const index = this.childTasks.findIndex((e) => e.id === id);
         if (index === -1) {
 
         } else {
@@ -395,45 +396,75 @@ export default {
        
        this.updatedChildTaskModuelesObj(id,obj)
        
-       var x = (this.childTasks.filter(childTask => childTask.done).length) / this.childTasks.length * 100
+       var cantida = 100/this.modules.length
+       this.total=0
+       for(let modulo of this.modules){
+
+         await  this.sumarpor(modulo)
+                            .then(res => {
+                                
+                              let can = cantida/res.length; 
+                              var x = res.filter(childTask => childTask.done).length
+                              let finalizado = x / res.length * 100
+                     
+                              let fin = can * x
+                              
+                              var obj = {
+                                finalizado:finalizado,
+                                finalizadoTask:  (this.FixedNumber(x) / res.length * 100) * modulo.porcentaje / 100
+                              }
+                              this.updatedTaskModuelesObj(modulo.id,obj)
+                              this.total+=  fin
+                              //this.setTotal(fin)
+                              //console.log('amir :'+fin);
+                            })
+                            .catch(err => {
+                                console.log(err);
+                            })
+         
+       }
+       console.log('total :'+this.getTotal());
        
+
        
        var obj = {
-         finalizado:this.FixedNumber(x),
-         finalizadoTask:  this.FixedNumber(x) * this.modulo.porcentaje / 100
+         porcentaje: this.total
        }
-       var fin = this.FixedNumber(x) * this.modulo.porcentaje / 100
-    var set = 0
-       if(boolean){
-         console.log(true)
-         if(this.task.porcentaje>0){
-           set = this.task.porcentaje+fin 
-         }else{
-           set = fin
-         }
-
-       }else{
-         
-         console.log(false)
-         if(fin>0){
-             set = this.task.porcentaje-fin 
-         }else{
-           set = this.task.porcentaje-this.modulo.porcentaje
-         }
-       }
-       var objTask = {
-         porcentaje: set
-       }
-
-       
-       console.log(objTask, this.task.porcentaje )
-       
-       this.updatedTaskObj(this.idTask,objTask)
-       this.updatedTaskModuelesObj(this.modulo.id,obj)
+       this.updatedTaskObj(this.idTask,obj)
        this.getTask(this.idTask)
       
 
       
+    },
+    sumarpor: function(modulo){
+       return new Promise((resolve, reject) => {
+                      this.$db
+                            .collection('tasks')
+                              .doc(this.idTask)
+                                .collection('modules')
+                                  .doc(modulo.id)
+                                    .collection('childTasks')
+                                      .onSnapshot((snapShot) => {
+                                        let modulesTaskChild = []
+                                        snapShot.forEach((childTask)  => {
+                                            modulesTaskChild.push({
+                                                  done: childTask.data().done
+                                                })
+                                                
+                                        });
+
+                                        resolve(modulesTaskChild)
+                                      
+                            });
+          })
+    },
+    setTotal:function(por){
+      console.log(por);
+      
+      this.total+=por
+    },
+    getTotal:function(){
+      return this.total
     },
     updatedTaskObj:function(idTasks,obj) {
         
